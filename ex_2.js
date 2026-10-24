@@ -1,3 +1,6 @@
+//kamil nassar
+// mariam nbrawi
+
 //check Prime Number function.
 function isPrime(x) {
   if (x <= 1) return false;
