@@ -1,38 +1,51 @@
-const http = require('http');
-const url = require('url');
-const fs = require('fs');
-const path = require('path');
+const http = require("http");
+const path = require("path");
+const fs = require("fs");
 
-//  creating server
-const server = http.createServer(function (req, res) {
-  // Parse the full URL
-  const parsedUrl = url.parse(req.url, true);
-  
-  // Extract pathname and query
-  const pathname = parsedUrl.pathname;
-  const query = parsedUrl.query;
+//server port
+const PORT = 3000;
 
-  if (pathname === '/') {
-    try {
-      const data = fs.readFileSync(path.join(__dirname, 'templates', 'page.html'), 'utf8');
+const server = http.createServer((req, res) => {
+  let filePath;
+  let contentType = "text/html";
+  //const filePath = path.join(__dirname, "templates", "page.html");
 
-      // If "name" is provided in the query, replace the placeholder in HTML
-      let name = query.name || 'Guest'; // Default to 'Guest' if name isn't provided
-      const personalizedContent = data.replace('{{name}}', name);
-
-      // Send the modified HTML file to the client
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(personalizedContent);
-    } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'text/html' });
-      res.end('<h1>Server Error</h1>');
-    }
+  if (req.url === "/" || req.url === "/page.html") {
+    filePath = path.join(__dirname, "templates", "page.html");
+  } else if (req.url === "/about.html") {
+    filePath = path.join(__dirname, "templates", "about.html");
+  } else if (req.url === "/contact.html") {
+    filePath = path.join(__dirname, "templates", "contact.html");
+  } else if (req.url.startsWith("/css/")) {
+    filePath = path.join(__dirname, req.url);
+    contentType = "text/css";
+  } else if (req.url.startsWith("/images/")) {
+    filePath = path.join(__dirname, req.url);
+    if (req.url.endsWith(".png")) contentType = "image/png";
+    else if (req.url.endsWith(".jpg") || req.url.endsWith(".jpeg"))
+      contentType = "image/jpeg";
   } else {
-    res.writeHead(404, { 'Content-Type': 'text/html' });
-    res.end('<h1>Page not found</h1>');
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("404 Not Found");
+    return;
   }
+
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("404 Page not found!!!");
+      return;
+    }
+
+    res.writeHead(200, { "Content-Type": contentType });
+
+    res.end(data);
+  });
 });
 
-server.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
+
+server.listen(PORT, () => {
+  console.log(
+    `Server running Successfully \nport: ${PORT}\nhttp://localhost:3000`,
+  );
 });

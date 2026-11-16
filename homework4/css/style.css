@@ -1,5 +1,23 @@
 .parent {
   display: grid;
   place-items: center;
-  height: 100vh; /* Optional: Makes the parent fill the entire screen */
+  height: 100vh;
+}
+
+.defaultText {
+  text-align: center;
+  color: blue;
+}
+
+.imagDiv {
+  display: flex;
+  justify-content: center;
+}
+
+.centerimg {
+  width: 50%;
+}
+
+body{
+  background-color: rgba(51, 239, 239, 0.573);
 }
