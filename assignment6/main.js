@@ -1,31 +1,45 @@
-const fs = require('fs');
+//Mariam Nbrawi
+//Kamil Nassar
 
-const files = [
-    'a1.txt',
-    'a2.txt',
-    'a3.txt'
-];
+const fs = require("fs");
+const path = require("path");
 
-let arr=[];
-let done=false;
-let howmanytotake=1;
-let answerarr=[];
-let j=0;
-let start=0;
-while(!done)
-{
-    done=true;
-    for(let i=0;i<files.length;i++)
-    {
-        arr=fs.readFileSync(C:/Users/fadis/OneDrive/Desktop/nodejs-homework/NodeJSMain/HomeWork6/input/${files[i]},utf-8).split('\n');
-        if(start<arr.length)
-            done=false;
-        for(j=start;j<start+howmanytotake&&j<arr.length;j++)
-        {
-            answerarr.push(arr[j]);
-        }
+const file = ["a1.txt", "a2.txt", "a3.txt"];
+
+const fileLines = file.map((fileName) => {
+  const filePath = path.join(__dirname, fileName);
+  const content = fs.readFileSync(filePath, "utf-8");
+  return content.split(/\r?\n/);
+});
+
+let resultText = "";
+let lineIndices = [0, 0, 0];
+let round = 1;
+let keepGoing = true;
+
+while (keepGoing) {
+  let anyFileStillHasLines = false;
+
+  for (let i = 0; i < fileLines.length; i++) {
+    let linesCopied = 0;
+
+    while (linesCopied < round && lineIndices[i] < fileLines[i].length) {
+      resultText += fileLines[i][lineIndices[i]] + "\n";
+      lineIndices[i]++;
+      linesCopied++;
     }
-        start+=howmanytotake;
-        howmanytotake++;
+
+    if (lineIndices[i] < fileLines[i].length) {
+      anyFileStillHasLines = true;
+    }
+  }
+
+  if (!anyFileStillHasLines) {
+    keepGoing = false;
+  }
+
+  round++;
 }
-fs.writeFileSync(C:/Users/fadis/OneDrive/Desktop/nodejs-homework/NodeJSMain/HomeWork6/input/output.txt,answerarr.join('\n'));
+
+fs.writeFileSync(path.join(__dirname, "test.txt"), resultText);
+console.log("Done! File created successfully.");
